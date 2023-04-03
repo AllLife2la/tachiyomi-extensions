@@ -298,18 +298,32 @@ class ComX : ParsedHttpSource() {
 
         val data = json.decodeFromString<JsonObject>(dataStr)
         val chaptersList = data["chapters"]?.jsonArray
-        val chapters: List<SChapter>? = chaptersList?.map {
+        var isCrossoverEvent = false
+
+        // TODO: Clean up "for loop - if statement" mess somehow
+        for (i in chaptersList!!.indices) {
+            // if there are different chapter names before the chapter number, then it means it is a crossover-event
+            if (chaptersList[0].jsonObject["title_en"]!!.jsonPrimitive.content.split("#")[0] !=
+                chaptersList[i].jsonObject["title_en"]!!.jsonPrimitive.content.split("#")[0]
+            ) {
+                isCrossoverEvent = true
+                break
+                // if there are empty chapter name before the chapter number, then it means it is not a crossover-event
+            } else if (chaptersList[i].jsonObject["title_en"]!!.jsonPrimitive.content.split("#")[0].isEmpty()) {
+                break
+            }
+        }
+
+        val chapters: List<SChapter>? = chaptersList.map {
             val chapter = SChapter.create()
-            // title_en is full chapter name, no english name
-            chapter.name = it.jsonObject["title_en"]!!.jsonPrimitive.content
-            if (chapter.name.isEmpty()) {
-                chapter.name = it.jsonObject["title"]!!.jsonPrimitive.content
-            }
-            if (chapter.name == "[перевода не существует]") {
-                chapter.name = it.jsonObject["title"]!!.jsonPrimitive.content + " " + "[перевода не существует]"
-            }
+            // usially "title" is main chapter info, "title_en" is additional chapter info
+            chapter.name = it.jsonObject["title"]!!.jsonPrimitive.content + " " + it.jsonObject["title_en"]!!.jsonPrimitive.content
             chapter.date_upload = simpleDateFormat.parse(it.jsonObject["date"]!!.jsonPrimitive.content)?.time ?: 0L
             chapter.chapter_number = it.jsonObject["posi"]!!.jsonPrimitive.float
+            // when it is Crossover-Event add reading order numbers as prefix
+            if (isCrossoverEvent) {
+                chapter.name = chapter.chapter_number.toInt().toString() + " " + chapter.name
+            }
             chapter.setUrlWithoutDomain("/readcomix/" + data["news_id"] + "/" + it.jsonObject["id"]!!.jsonPrimitive.content + ".html")
             chapter
         }
