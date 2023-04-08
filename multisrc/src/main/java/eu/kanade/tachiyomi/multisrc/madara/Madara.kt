@@ -722,6 +722,7 @@ abstract class Madara(
         "Completado",
         "Concluído",
         "Concluido",
+        "Finalizado",
         "Terminé",
         "Hoàn Thành",
         "مكتملة",
@@ -732,8 +733,8 @@ abstract class Madara(
     protected val ongoingStatusList: Array<String> = arrayOf(
         "OnGoing", "Продолжается", "Updating", "Em Lançamento", "Em lançamento", "Em andamento",
         "Em Andamento", "En cours", "Ativo", "Lançando", "Đang Tiến Hành", "Devam Ediyor",
-        "Devam ediyor", "In Corso", "In Arrivo", "مستمرة", "مستمر", "En Curso", "Emision",
-        "En marcha", "连载中",
+        "Devam ediyor", "In Corso", "In Arrivo", "مستمرة", "مستمر", "En Curso", "En curso", "Emision",
+        "En marcha", "Publicandose", "连载中",
     )
 
     protected val hiatusStatusList: Array<String> = arrayOf(
